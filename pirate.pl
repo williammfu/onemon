@@ -2,7 +2,7 @@
 :-dynamic(pirate/3).
 
 % Inisialisasi pirate
-pirate(kode,name,health)
+% pirate(kode,name,health)
 pirate(130, ace, 73).
 pirate(131, usop,70).
 pirate(132, tony,48).
@@ -100,47 +100,53 @@ normalAtt(X,Y) :- /* fighter -> shooter, damage - 50% */
 	pirate(A,X,Hp1), pirate(B,Y,Hp2),
 	type(X,fighter), type(Y,shooter),
 	damage(X,W),
-	W1 is W/2, NewHp is Hp1 - W1,
-	retract(pirate(A,X,Hp1)),
-	asserta(pirate(A,X,NewHp)),!.
+	W1 is W/2, NewHp is Hp2 - W1,
+	retract(pirate(B,Y,Hp2)),
+	asserta(pirate(B,Y,NewHp)),!.
 	
 normalAtt(X,Y) :- /* shooter -> swordsman, damage - 50% */
 	pirate(A,X,Hp1), pirate(B,Y,Hp2),
 	type(X,shooter), type(Y,swordsman),
 	damage(X,W),
-	W1 is W/2, NewHp is Hp1 - W1,
-	retract(pirate(A,X,Hp1)),
-	asserta(pirate(A,X,NewHp)),!.
+	W1 is W/2, NewHp is Hp2 - W1,
+	retract(pirate(B,Y,Hp2)),
+	asserta(pirate(B,Y,NewHp)),!.
 
 normalAtt(X,Y) :- /* swordsman -> fighter, damage - 50% */
 	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
 	type(X,swordsman), type(Y,fighter),
 	damage(X,W),
-	W1 is W/2, NewHp is Hp1 - W1,
-	retract(pirate(A,X,Hp1)),
-	asserta(pirate(A,X,NewHp)),!.
+	W1 is W/2, NewHp is Hp2 - W1,
+	retract(pirate(B,Y,Hp2)),
+	asserta(pirate(B,Y,NewHp)),!.
 
-normalAtt(X,Y) :- /* shooter -> fighter, damage + 50% */
-	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
-	type(X,shooter), type(Y,fighter),
-	damage(X,W),
-	W1 is 3*W/2, NewHp is Hp1 - W1,
-	retract(pirate(A,X,Hp1)),
-	asserta(pirate(A,X,NewHp)),!.
+% normalAtt(X,Y) :- /* shooter -> fighter, damage + 50% */
+% 	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
+% 	type(X,shooter), type(Y,fighter),
+% 	damage(X,W),
+% 	W1 is 3*W/2, NewHp is Hp1 - W1,
+% 	retract(pirate(B,Y,Hp2)),
+% 	asserta(pirate(B,Y,NewHp))),!.
 
-normalAtt(X,Y) :- /* swordsman -> shooter, damage + 50% */
-	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
-	type(X,swordsman), type(Y,shooter),
-	damage(X,W),
-	W1 is 3*W/2, NewHp is Hp1 - W1,
-	retract(pirate(A,X,Hp1)),
-	asserta(pirate(A,X,NewHp)),!.
+% normalAtt(X,Y) :- /* swordsman -> shooter, damage + 50% */
+% 	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
+% 	type(X,swordsman), type(Y,shooter),
+% 	damage(X,W),
+% 	W1 is 3*W/2, NewHp is Hp1 - W1,
+% 	retract(pirate(B,Y,Hp2)),
+% 	asserta(pirate(B,Y,NewHp))),!.
 
-normalAtt(X,Y) :- /* fighter -> swordsman, damage + 50% */
-	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
-	type(X,fighter), type(Y,swordsman),
-	damage(X,W),
-	W1 is 3*W/2, NewHp is Hp1 - W1,
-	retract(pirate(A,X,Hp1)),
-	asserta(pirate(A,X,NewHp)),!.
+% normalAtt(X,Y) :- /* fighter -> swordsman, damage + 50% */
+% 	pirate(A,X,Hp1), pirate(B,Y,Hp2),	
+% 	type(X,fighter), type(Y,swordsman),
+% 	damage(X,W),
+% 	W1 is 3*W/2, NewHp is Hp1 - W1,
+% 	retract(pirate(B,Y,Hp2)),
+% 	asserta(pirate(B,Y,NewHp))),!.
 	
+% normalAtt(X,Y) :-
+% 	pirate(A,X,Hp1), pirate(B,Y,Hp2),
+% 	type(X,_), type(Y,_),
+% 	damage(X,W), NewHp is Hp2-W,
+% 	retract(pirate(B,Y,Hp2)),
+% 	asserta(pirate(B,Y,NewHp))),!.
