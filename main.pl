@@ -17,17 +17,26 @@ start :-
     write('                    Dapatkah Anda menemukan Onemon?                   '),nl,
     write('                 Berhati-hatilah! Lautan ini berbahaya!  ~~~~~~~~~~~~~'),nl,
     nl,
-    write('Kami menunggu perintah anda, kapten!'), nl,
-    write('Anda berkata: '),read(Command),
-    excecute(Command).
 
-excecute(help) :- printhelp.
-excecute(map) :- printmap.
-excecute(quit) :- 
-    write('Jangan pergi kapten!'),nl,
+    % Skema Looping
+    % Meminta input dari pemain sampai permainan berakhir
+    repeat,
+        write('Kami menunggu perintah anda, kapten!'), nl,
+        write('Perintah Anda: '),read(Command),
+        do(Command),
+    end_condition(Command).
+
+do(help) :- printhelp,!.
+do(n) :- move(n),!.
+do(s) :- move(s),!.
+do(e) :- move(e),!.
+do(w) :- move(w),!.
+do(map) :- kompas, printmap(0,0),nl,!.
+do(quit) :- 
+    write('Apakah kamu yakin, kapten? (y/n)'),nl,
     read(X), quit(X),!.
 % Command tidak valid
-excecute(_) :- write('Tidak ada perintah itu, kapten!'), nl, !.
+do(_) :- write('Tidak ada perintah itu, kapten!'), nl, nl, !.
 
 printhelp :- 
     nl,
@@ -48,3 +57,7 @@ printhelp :-
 
 quit(y) :- halt,!.
 quit(n) :- write('Kembali ke lautan, kapten!'),nl.
+
+end_condition(Command) :- 
+    Command == hehe,
+    write('Selesai'),nl, quit(y), !.
