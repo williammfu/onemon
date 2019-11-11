@@ -52,7 +52,7 @@ printhelp :-
     write('     status/0 = menampilkan status anda'),nl,nl,
     write('     ==== Legenda ======================================='),nl,
     write('     P = Player  '),nl,
-    write('     X = Border  '),nl,
+    write('     X = Ranjau  '),nl,
     write('     S = Skypiea '),nl.
 
 quit(y) :- halt,!.
@@ -60,4 +60,4 @@ quit(n) :- write('Kembali ke lautan, kapten!'),nl.
 
 end_condition(Command) :- 
     Command == hehe,
-    write('Selesai'),nl, quit(y), !.
+    write('Selesai'),nl, halt, !.
