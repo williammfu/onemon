@@ -32,6 +32,10 @@ do(s) :- move(s),!.
 do(e) :- move(e),!.
 do(w) :- move(w),!.
 do(map) :- kompas, printmap(0,0),nl,!.
+do(status) :- write('Kru Anda    : '), nl.
+do(status) :- print_inventori.
+do(status) :- write('Musuh Anda  : '), nl,
+            !, print_enemy.
 do(quit) :- 
     write('Apakah kamu yakin, kapten? (y/n)'),nl,
     read(X), quit(X),!.

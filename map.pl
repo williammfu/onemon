@@ -1,6 +1,9 @@
+:-include('pirate.pl').
 /*Implementasi peta dalam permainan*/
 % Variabel dynamic (nilainya berubah-ubah)
 :- dynamic(playLoc/2).
+:- dynamic(inventori/1).
+
 
 /*Inisialisasi awal*/
 playLoc(1,1). %Posisi awal player selalu (1,1)
@@ -86,3 +89,30 @@ move(w) :-
     write('Berlayar ke barat. . .'),nl,
     retract(playLoc(X,Y)),
     asserta(playLoc(X,Prev)),!.    
+
+inventori(X) :-
+    pirate(_,_,_,1),
+    X1 is X+1,
+    X is X1.
+
+print_inventori :-
+    pirate(_,NAME,HEALTH,1),
+    type(NAME,TYPE), 
+    write('Nama             : '),
+    write(NAME), nl,
+    write('Health           : '),
+    write(HEALTH), nl,
+    write('Tipe             : '),
+    write(TYPE), nl, nl.
+
+print_enemy :-
+    pirate(_,NAME, HEALTH, 0),
+    legend(NAME), 
+    type(NAME,TYPE), 
+    write('Nama             : '),
+    write(NAME), nl,
+    write('Health           : '),
+    write(HEALTH), nl,
+    write('Tipe             : '),
+    write(TYPE), nl, nl.
+
