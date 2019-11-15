@@ -2,6 +2,7 @@
 :-dynamic(pirate/4).
 :-dynamic(pirLoc/3).
 :-dynamic(inventory/2).
+:-dynamic(invEnemy/2).
 
 % Inisialisasi pirate
 % pirate(kode,name,health, kepemilikan)
@@ -18,9 +19,9 @@ pirate(138, vinsmoke,46, 0).
 pirate(139, doflamingo,71, 0).
 
 % legendary = kode 140-144
-pirate(140, luffy, 235, 0).
-pirate(141, zoro, 265, 0).
-pirate(142, sanji, 123, 0).
+% pirate(140, luffy, 235, 0).
+% pirate(141, zoro, 265, 0).
+% pirate(142, sanji, 123, 0).
 pirate(143, bigMama, 247, 0).
 pirate(144, rakhamon, 288, 0).
 
@@ -42,8 +43,11 @@ pirLoc(143, 0, 0).
 pirLoc(144, 0, 0).
 
 % inventory(Jumlah, List)
-inventory(1,[130]).
+inventory(2,[130,132]).
+% invEnemy(Jumlah, List)
+invEnemy(2,[143,144]).
 
+% Taruh pirate di peta secara random --belum jadi
 put_pirate(0).
 put_pirate(1) :-
 
@@ -280,25 +284,74 @@ add(X,[],[X]).
 add(X, [H|T], T2) :-
 	add(X, T, T2).
 
+% sub( indeks yang mau, list input, list hasil)
+sub(_, [], []).
+sub(X, [X|T], T2) :-
+	sub(X, T, T2).
+sub(X, [H|T], [H|T2]) :-
+	H \== X,
+	sub(X, T, T2), !.
+
+%add_inv( indeks pirate yang mau di tambah)
+add_inv(X) :-
+	inventory(6,_),
+	write('Kapal sudah penuh kapten!'),nl,
+	write('Usir salah satu kru!'),!.
+
 add_inv(X) :-
 	pirate(X,_,_,1),
-	inventory(CurrInv),
+	inventory(A, CurrInv),
+	B is A +1,
 	add(X,CurrInv,NewInv),
-	retract(inventory(CurrInv)),
-	asserta(inventory(NewInv)),!.
+	retract(inventory(A, CurrInv)),
+	asserta(inventory(B, NewInv)),!.
 
-print_inventori :-
-    pirate(_,NAME,HEALTH,1),
+add_inv(X) :-
+	pirate(X,NAME,_,0),
+	legend(NAME),
+	invEnemy(A, CurrInv),
+	B is A +1,
+	add(X,CurrInv,NewInv),
+	health(NAME, H),
+	retract(invEnemy(A, CurrInv)),
+	asserta(invEnemy(B, NewInv)),
+	retract(pirate(X,NAME,_,0)),
+	asserta(pirate(X,NAME,H,1)),!.
+
+	
+%sub_inv (indeks pirate yang mati)
+sub_inv(X) :-
+	pirate(X,_,_,1),
+	inventory(A, CurrInv),
+	B is A-1,
+	sub(X,CurrInv,NewInv),
+	retract(inventory(A, CurrInv)),
+	asserta(inventory(B, NewInv)),!.
+
+sub_inv(X) :-
+	pirate(X,NAME,_,0),	%Menghapus legend
+	legend(NAME),
+	invEnemy(A, CurrInv),
+	B is A-1,
+	sub(X,CurrInv,NewInv),
+	retract(invEnemy(A, CurrInv)),
+	asserta(invEnemy(B, NewInv)),!.
+
+print_inventori([]),!.
+print_inventori([H|Sisa]) :-
+    pirate(H,NAME,HEALTH,1),
     type(NAME,TYPE), 
     write('Nama             : '),
     write(NAME), nl,
     write('Health           : '),
     write(HEALTH), nl,
     write('Tipe             : '),
-    write(TYPE), nl, nl.
+    write(TYPE), nl, nl, 
+	print_inventori(Sisa).
 
-print_enemy :-
-    pirate(_,NAME, HEALTH, 0),
+print_enemy([]) ,!.	
+print_enemy([H|Sisa]) :-
+    pirate(H,NAME, HEALTH, 0),
     legend(NAME), 
     type(NAME,TYPE), 
     write('Nama             : '),
@@ -306,4 +359,5 @@ print_enemy :-
     write('Health           : '),
     write(HEALTH), nl,
     write('Tipe             : '),
-    write(TYPE), nl, nl.
+    write(TYPE), nl, nl,
+	print_enemy(Sisa).

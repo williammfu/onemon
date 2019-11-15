@@ -35,9 +35,9 @@ do(e) :- move(e),!.
 do(w) :- move(w),!.
 do(map) :- kompas, printmap(0,0),nl,!.
 do(status) :- write('Kru Anda    : '), nl.
-do(status) :- print_inventori.
-do(status) :- write('Musuh Anda  : '), nl,
-            !, print_enemy.
+do(status) :- inventory(_,Inv), print_inventori(Inv).
+do(status) :- write('Musuh Anda  : '), nl, 
+            !, invEnemy(_,Inv), print_enemy(Inv).
 do(heal) :-                                                     % Heal pirate, hanya bisa di Skypiea
     playLoc(X,Y), skyLoc(A,B), X\==A, Y\==B,
     write('Kami tidak berada di Skypiea, kapten!'), nl, nl,!.

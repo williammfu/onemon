@@ -1,4 +1,4 @@
-:-include('pirate.pl').
+:- include('pirate.pl').
 
 :- dynamic(is_pick/1).
 is_pick(0).
@@ -19,11 +19,22 @@ battle:-
 
     repeat,
         pirate(A,Name,Hp1,1),
-        pirate(137,Y,Hp2,0),
+        pirate(B,Y,Hp2,0),
         write('Kami menunggu perintah anda, kapten!'), nl,
         write('Perintah Anda: '),read(Command),
         do_battle(Command),       
     battle_ends.
+
+%run 
+run(X) :-
+    X =:= 1, 
+    write('Mau kabur kemana, Kapten?'), nl,
+    battle.
+
+    
+run(X) :-
+    X =:= 2, 
+    write('Anda berhasil kabur, Kapten!'), nl,.
 
 % do_battle(pick(X)) :- pick(X),!.
 do_battle(pick(_)) :- pick(_),!.
@@ -55,12 +66,28 @@ end_pick :-
     is_pick(1).
 
 battle_ends :-
-    pirate(_,X,Hp1,1),
+    pirate(Num,X,Hp1,1),
     Hp1 =< 0,
     write('Sayang sekali kapten. . .'),nl,
-    write(X), write(' gugur dalam perang.'),nl,!.
+    write(X), write(' jatuh ke tangan lawan!'),nl,
+    sub_inv(Num),!.
+
 battle_ends :-
-    pirate(_,Y,Hp2,0),
+    pirate(ID,Y,Hp2,0),
     Hp2 =< 0,
     write('Selamat, kapten !'), nl,
-    write(Y), write(' berhasil dikalahkan!'),nl,!.
+    write(Y), write(' berhasil dikalahkan!'),nl,
+    write('Apakah Anda mau merekrut '), write(Y), write('? [y/n]'),
+    read(input),
+    rekrut(input, ID),
+    !.
+
+rekrut(y, ID) :-
+    add_inv(ID), 
+    pirate(ID, NAME, _,1),
+    write(NAME), write (' berhasil bergabung dalam kru Anda!'), nl.
+
+rekrut(n, ID) :-
+    write ('Keputusan yang bijak, Kapten!'), nl.
+    
+
