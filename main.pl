@@ -15,17 +15,19 @@ start :-
 	nl,nl,
     write('~~~~~~~~~~~~~~~     Selamat datang di Lautan Kasatu!                  '),nl,
     write('                    Dapatkah Anda menemukan Onemon?                   '),nl,
-    write('                 Berhati-hatilah! Lautan ini berbahaya!  ~~~~~~~~~~~~~'),nl,
-    nl,
+    write('                 Berhati-hatilah! Lautan ini berbahaya!  ~~~~~~~~~~~~~'),nl,nl,
+    write('                       > Tekan tombol ENTER <'),
+    get0(_), printhelp,
 
     % Skema Looping
     % Meminta input dari pemain sampai permainan berakhir
     repeat,
         write('Kami menunggu perintah anda, kapten!'), nl,
-        write('Perintah Anda: '),read(Command),
+        write('> '),read(Command),
         do(Command),
     end_condition(Command).
 
+do(start) :- write('Permainan sudah berjalan, kapten!'),nl,nl,!.
 do(help) :- printhelp,!.
 do(n) :- move(n),!.
 do(s) :- move(s),!.
@@ -36,31 +38,34 @@ do(status) :- write('Kru Anda    : '), nl.
 do(status) :- print_inventori.
 do(status) :- write('Musuh Anda  : '), nl,
             !, print_enemy.
-do(quit) :- 
+do(heal) :-                                                     % Heal pirate, hanya bisa di Skypiea
+    playLoc(X,Y), skyLoc(A,B), X\==A, Y\==B,
+    write('Kami tidak berada di Skypiea, kapten!'), nl, nl,!.
+do(heal) :- playLoc(X,Y), skyLoc(X,Y), heal,!.
+do(quit) :-                                                     % Keluar dari permainan
     write('Apakah kamu yakin, kapten? (y/n)'),nl,
     read(X), quit(X),!.
-% Command tidak valid
-do(_) :- write('Tidak ada perintah itu, kapten!'), nl, nl, !.
+do(_) :- write('Tidak ada perintah itu, kapten!'), nl, nl, !.   % Command tidak valid
 
 printhelp :- 
     nl,
     write('     Anda membuka jurnal anda. Ini yang anda baca'),
     nl,nl,
-    write('     ==== Commands ======================================'),nl,
-    write('     start/0. = menjalankan permainan'),nl,
-    write('     help/0. = membuka jurnal'),nl,
-    write('     quit/0. = keluar dari permainan'),nl,
-    write('     n/0, s/0, w/0, e/0. = berlayar satu petak'),nl,
-    write('     map/0 = membuka peta'),nl,
-    write('     heal/0 = menyembuhkan semua pirate (hanya di Skypiea)'),nl,
-    write('     status/0 = menampilkan status anda'),nl,nl,
-    write('     ==== Legenda ======================================='),nl,
+    write('  Commands ======================================'),nl,
+    write('     start. = menjalankan permainan'),nl,
+    write('     help. = membuka jurnal'),nl,
+    write('     quit. = keluar dari permainan'),nl,
+    write('     n. s. w. e. = berlayar satu petak'),nl,
+    write('     map. = membuka peta'),nl,
+    write('     heal. = menyembuhkan semua pirate (hanya di Skypiea)'),nl,
+    write('     status. = menampilkan status anda'),nl,nl,
+    write('  Legenda ======================================='),nl,
     write('     P = Player  '),nl,
     write('     X = Ranjau  '),nl,
-    write('     S = Skypiea '),nl.
+    write('     S = Skypiea '),nl,nl.
 
 quit(y) :- halt,!.
-quit(n) :- write('Kembali ke lautan, kapten!'),nl.
+quit(n) :- write('Kembali ke lautan, kapten!'),nl,nl.
 
 end_condition(Command) :- 
     Command == hehe,
