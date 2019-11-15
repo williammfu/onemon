@@ -1,5 +1,7 @@
 /* ATRIBUT ONE-MON */
 :-dynamic(pirate/4).
+:-dynamic(pirLoc/3).
+:-dynamic(inventory/2).
 
 % Inisialisasi pirate
 % pirate(kode,name,health, kepemilikan)
@@ -16,11 +18,62 @@ pirate(138, vinsmoke,46, 0).
 pirate(139, doflamingo,71, 0).
 
 % legendary = kode 140-144
-pirate(140, luffy,235, 0).
-pirate(141, zoro,265, 0).
-pirate(142, sanji,123, 0).
-pirate(143, bigMama,247, 0).
-pirate(144, rakhamon,288, 0).
+pirate(140, luffy, 235, 0).
+pirate(141, zoro, 265, 0).
+pirate(142, sanji, 123, 0).
+pirate(143, bigMama, 247, 0).
+pirate(144, rakhamon, 288, 0).
+
+% pirLoc(Kode, Posisi X, Posisi Y)
+% initial state : lokasi 0,0 (undefined)
+pirLoc(131, 0, 0).
+pirLoc(132, 0, 0).
+pirLoc(133, 0, 0).
+pirLoc(134, 0, 0).
+pirLoc(135, 0, 0).
+pirLoc(136, 0, 0).
+pirLoc(137, 0, 0).
+pirLoc(138, 0, 0).
+pirLoc(139, 0, 0).
+pirLoc(140, 0, 0).
+pirLoc(141, 0, 0).
+pirLoc(142, 0, 0).
+pirLoc(143, 0, 0).
+pirLoc(144, 0, 0).
+
+% inventory(Jumlah, List)
+inventory(1,[130]).
+
+put_pirate(0).
+put_pirate(1) :-
+
+	random(130,139,X),
+	pirate(X,Name,_,0),
+	pirLoc(X,_,_),
+
+	random(1,10,PosX), random(1,10,PosY),
+	retract(pirLoc(X,_,_)),
+	asserta(pirLoc(X,PosX,PosY)),
+
+	write(Name),write(' berada di '),
+	write('('), write(PosX),write(','), write(PosY),write(')'),nl,!.
+
+put_pirate(N) :-
+
+	random(130,139,X),
+	pirate(X,Name,_,0),
+	pirLoc(X,_,_),
+
+	random(1,10,PosX), random(1,10,PosY),
+	retract(pirLoc(X,_,_)),
+	asserta(pirLoc(X,PosX,PosY)),
+
+	write(Name),write(' berada di '),
+	write('('), write(PosX),write(','), write(PosY),write(')'),nl,
+	
+	N1 is N-1,
+	put_pirate(N1),!. 
+
 
 /* normal(X) artinya X merupakan Pirate tipe normal */
 % normal(ace).
@@ -223,6 +276,17 @@ specialAtt(X,Y) :-
 	retract(pirate(B,Y,Hp2,Opp)),
 	asserta(pirate(B,Y,NewHp,Opp)),!.
 
+add(X,[],[X]).
+add(X, [H|T], T2) :-
+	add(X, T, T2).
+
+add_inv(X) :-
+	pirate(X,_,_,1),
+	inventory(CurrInv),
+	add(X,CurrInv,NewInv),
+	retract(inventory(CurrInv)),
+	asserta(inventory(NewInv)),!.
+
 print_inventori :-
     pirate(_,NAME,HEALTH,1),
     type(NAME,TYPE), 
@@ -243,8 +307,3 @@ print_enemy :-
     write(HEALTH), nl,
     write('Tipe             : '),
     write(TYPE), nl, nl.
-
-% generate_random :-
-%     random(130,139,X),
-%     write('Hasil random : '),
-%     write(X),nl.

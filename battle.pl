@@ -3,14 +3,18 @@
 :- dynamic(is_pick/1).
 is_pick(0).
 
-battle:-
+opening_battle :-
     write('Saatnya berperang, kapten!'), nl,
     write('Pilih kru Anda!'), nl, 
-    print_inventori,
+    print_inventori.
+
+battle:-
+    
+    opening_battle,
     
     repeat,
-        write('> '), read(Name),
-        pick(Name),
+        write('> '), read(Command),
+        do_battle(Command),
     end_pick,
 
     repeat,
@@ -22,6 +26,7 @@ battle:-
     battle_ends.
 
 % do_battle(pick(X)) :- pick(X),!.
+do_battle(pick(_)) :- pick(_),!.
 do_battle(attack) :- 
     pirate(Kode1,X,Hp1,1),
     pirate(Kode2,Y,Hp2,0),
