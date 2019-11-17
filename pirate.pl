@@ -1,29 +1,28 @@
-/* ATRIBUT ONE-MON */
+:- include('map.pl').
+% Variable dynamic
 :-dynamic(pirate/4).
 :-dynamic(pirLoc/3).
 :-dynamic(inventory/2).
 :-dynamic(invEnemy/2).
+:-dynamic(invTotal/1).
 
 % Inisialisasi pirate
 % pirate(kode,name,health, kepemilikan)
 % normal = kode 130 - 139
-pirate(130, ace, 73, 1).
-pirate(131, usop,70, 0).
-pirate(132, tony,48, 1).
-pirate(133, law,43, 0).
-pirate(134, rayleigh,38, 0).
-pirate(135, newgate,75, 0).
-pirate(136, dragon,41, 0).
-pirate(137, katakuri,33, 0).
-pirate(138, vinsmoke,46, 0).
-pirate(139, doflamingo,71, 0).
+pirate(130, luffy, 73, 1).
+pirate(131, usop, 70, 0).
+pirate(132, chopper, 48, 0).
+pirate(133, zoro, 43, 0).
+pirate(134, rayleigh,42, 0).
+pirate(135, robin, 75, 0).
+pirate(136, franky, 41, 0).
+pirate(137, sanji, 38, 0).
+pirate(138, nami, 46, 0).
+pirate(139, doflamingo, 71, 0).
 
-% legendary = kode 140-144
-% pirate(140, luffy, 235, 0).
-% pirate(141, zoro, 265, 0).
-% pirate(142, sanji, 123, 0).
-pirate(143, bigMama, 247, 0).
-pirate(144, rakhamon, 288, 0).
+% legendary = kode 140 - 144
+pirate(140, bigMama, 247, 0).
+pirate(141, rakhamon, 288, 0).
 
 % pirLoc(Kode, Posisi X, Posisi Y)
 % initial state : lokasi 0,0 (undefined)
@@ -38,115 +37,101 @@ pirLoc(138, 0, 0).
 pirLoc(139, 0, 0).
 pirLoc(140, 0, 0).
 pirLoc(141, 0, 0).
-pirLoc(142, 0, 0).
-pirLoc(143, 0, 0).
-pirLoc(144, 0, 0).
 
 % inventory(Jumlah, List)
-inventory(2,[130,132]).
+inventory(2,[130]).
 % invEnemy(Jumlah, List)
-invEnemy(2,[143,144]).
+invEnemy(2,[140,141]).
+% invTotal(List)
+invTotal([131,132,133,134,135,136,137,138,139,140,141]).
 
-% Taruh pirate di peta secara random --belum jadi
-put_pirate(0).
-put_pirate(1) :-
+% Taruh pirate di peta secara random
+random_put(131) :- put_pirate(131),!.
+random_put(Idx) :-
 
-	random(130,139,X),
-	pirate(X,Name,_,0),
-	pirLoc(X,_,_),
-
-	random(1,10,PosX), random(1,10,PosY),
-	retract(pirLoc(X,_,_)),
-	asserta(pirLoc(X,PosX,PosY)),
-
-	write(Name),write(' berada di '),
-	write('('), write(PosX),write(','), write(PosY),write(')'),nl,!.
-
-put_pirate(N) :-
-
-	random(130,139,X),
-	pirate(X,Name,_,0),
-	pirLoc(X,_,_),
-
-	random(1,10,PosX), random(1,10,PosY),
-	retract(pirLoc(X,_,_)),
-	asserta(pirLoc(X,PosX,PosY)),
-
-	write(Name),write(' berada di '),
-	write('('), write(PosX),write(','), write(PosY),write(')'),nl,
+	put_pirate(Idx),
+	PrevIdx is Idx - 1,
+	random_put(PrevIdx).
 	
-	N1 is N-1,
-	put_pirate(N1),!. 
+put_pirate(Idx):-
 
+    repeat,
+        random(1,10,X), random(1,10,Y),
+        pirLoc(Idx,_,_),
+        retract(pirLoc(Idx,_,_)),
+        asserta(pirLoc(Idx,X,Y)),
+    okayLoc(Idx).
+
+okayLoc(Idx):-
+
+    pirLoc(Idx,X,Y), pirLoc(Other,A,B),
+	Idx \== Other, X==A, Y==B,!,fail,
+    skyLoc(C,D),
+    X==C, Y==D,!,fail.
 
 /* normal(X) artinya X merupakan Pirate tipe normal */
-% normal(ace).
+% normal(luffy).
 % normal(usop).
-% normal(tony).
-% normal(law).
+% normal(chopper).
+% normal(zoro).
 % normal(rayleigh).
-% normal(newgate).
-% normal(dragon).
-% normal(katakuri).
-% normal(vinsmoke).
+% normal(robin).
+% normal(franky).
+% normal(sanji).
+% normal(nami).
 % normal(doflamingo).
 
 /* legend(X) artinya X merupakan Pirate tipe legend */
-legend(luffy).
-legend(zoro).
-legend(sanji).
+
 legend(bigMama).
 legend(rakhamon).
 
 /* health(X,Y) artinya Pirate X memiliki health senilai Y */
-health(ace,73).
+health(luffy,73).
 health(usop,70).
-health(tony,48).
-health(law,43).
+health(chopper,48).
+health(zoro,43).
 health(rayleigh,38).
-health(newgate,75).
-health(dragon,41).
-health(katakuri,33).
-health(vinsmoke,46).
+health(robin,75).
+health(franky,41).
+health(sanji,33).
+health(nami,46).
 health(doflamingo,71).
-health(luffy,235).
-health(zoro,265).
-health(sanji,123).
 health(bigMama,247).
 health(rakhamon,288).
 
-/* type(X,Y) artinya X memiliki type Y */
+/* type(X,Y,Z) artinya X memiliki type Y dengan nama serangan Z*/
 /* jenis type: fighter, shooter, swordsman */
-type(ace,fighter).
-type(usop,shooter).
-type(tony,fighter).
-type(law,swordsman).
-type(rayleigh,swordsman).
-type(newgate,swordsman).
-type(dragon,fighter).
-type(katakuri,fighter).
-type(vinsmoke,shooter).
-type(doflamingo,fighter).
-type(luffy,fighter).
-type(zoro,swordsman).
-type(sanji,fighter).
-type(bigMama,shooter).
-type(rakhamon,shooter).
+type(luffy,fighter, rubber_Rush).
+type(usop,shooter, usopp_Boomerang).
+type(chopper,fighter, rumble_Ball).
+type(zoro,swordsman, santoryu).
+type(rayleigh,swordsman, busoshoku_Haki).
+type(robin,swordsman, seis_Fleur).
+type(franky,fighter, coup_De_Vent).
+type(sanji,fighter, black_Leg_Style).
+type(nami,shooter, clima_Tact).
+type(doflamingo,fighter, ito_ito_no_mi).
+type(bigMama,shooter, haoshoku_Haki).
+type(rakhamon,shooter, ekusupuroshion).
+
+% weak (tipe , kelemahan tipe tsb)
+weak(fighter,shooter).
+weak(shooter,swordsman).
+weak(swordsman,fighter).
 
 /* damage(X,Y) artinya X menimbulkan damage sebesar Y */
-damage(ace,20).
+damage(luffy,22).
 damage(usop,28).
-damage(tony,36).
-damage(law,44).
+damage(chopper,36).
+damage(zoro,44).
 damage(rayleigh,36).
-damage(newgate,28).
-damage(dragon,20).
-damage(katakuri,28).
-damage(vinsmoke,36).
+damage(robin,28).
+damage(franky,20).
+damage(sanji,28).
+damage(nami,36).
 damage(doflamingo,44).
-damage(luffy,50).
-damage(zoro,52).
-damage(sanji,54).
+% legendary : damage lebih besar
 damage(bigMama,56).
 damage(rakhamon,58).
 
@@ -155,133 +140,87 @@ skill(X,Y) :-
 	damage(X,Z),
 	Y is 3*Z/2.
 
-/* normalAtt(X,Y) artinya X melakukan normal attack kepada Y */ 
-normalAtt(X,Y) :- /* fighter -> shooter, damage - 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),
-	type(X,fighter), type(Y,shooter),
-	damage(X,W),
-	W1 is W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
+%%%%%%%%%%%%%%%%%%% Normal Attack %%%%%%%%%%%%%%%%%%%
+normalAtt(Att,Def) :- % Att lemah dari Def, damage diterima Def - 50%
 	
-normalAtt(X,Y) :- /* shooter -> swordsman, damage - 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),
-	type(X,shooter), type(Y,swordsman),
-	damage(X,W),
-	W1 is W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-normalAtt(X,Y) :- /* swordsman -> fighter, damage - 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,swordsman), type(Y,fighter),
-	damage(X,W),
-	W1 is W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-normalAtt(X,Y) :- /* shooter -> fighter, damage + 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,shooter), type(Y,fighter),
-	damage(X,W),
-	W1 is 3*W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-normalAtt(X,Y) :- /* swordsman -> shooter, damage + 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,swordsman), type(Y,shooter),
-	damage(X,W),
-	W1 is 3*W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-normalAtt(X,Y) :- /* fighter -> swordsman, damage + 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,fighter), type(Y,swordsman),
-	damage(X,W),
-	W1 is 3*W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
+	pirate(_,Att,_,_), type(Att,TypeAtt,_), 
+	pirate(_,Def,OldHp,_), type(Def,TypeDef,_), 
 	
-normalAtt(X,Y) :-
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),
-	type(X,_), type(Y,_),
-	damage(X,W), NewHp is Hp2-W,
-	write(X), write(' menyerang '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-specialAtt(X,Y) :-
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),
-	type(X,fighter), type(Y,shooter),
-	skill(X,W),
-	W1 is W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-specialAtt(X,Y) :- /* shooter -> swordsman, damage - 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),
-	type(X,shooter), type(Y,swordsman),
-	skill(X,W),
-	W1 is W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-specialAtt(X,Y) :- /* swordsman -> fighter, damage - 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,swordsman), type(Y,fighter),
-	skill(X,W),
-	W1 is W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-specialAtt(X,Y) :- /* shooter -> fighter, damage + 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,shooter), type(Y,fighter),
-	skill(X,W),
-	W1 is 3*W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-specialAtt(X,Y) :- /* swordsman -> shooter, damage + 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,swordsman), type(Y,shooter),
-	skill(X,W),
-	W1 is 3*W/2, NewHp is Hp2 - W1,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
-
-specialAtt(X,Y) :- /* fighter -> swordsman, damage + 50% */
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),	
-	type(X,fighter), type(Y,swordsman),
-	skill(X,W),
-	W1 is 3*W/2, NewHp is Hp2-W1,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
+	weak(TypeAtt,TypeDef), 
+	damage(Att,W), W1 is W/2, NewHp is OldHp - W1,
 	
-specialAtt(X,Y) :-
-	pirate(_,X,_,_), pirate(B,Y,Hp2,Opp),
-	type(X,_), type(Y,_),
-	skill(X,W), NewHp is Hp2-W,
-	write(X), write(' menyerang istimewa '), write(Y), nl,nl,
-	retract(pirate(B,Y,Hp2,Opp)),
-	asserta(pirate(B,Y,NewHp,Opp)),!.
+	write(Att), write(' menyerang '), write(Def), nl,
+	write('Serangan yang lemah. . .'),nl,
+	retract(pirate(Kode,Def,OldHp,Opp)),
+	asserta(pirate(Kode,Def,NewHp,Opp)),!.
 
+normalAtt(Att,Def):- % Def lemah dari Att, damage diterima Def + 50%
+	
+	pirate(_,Att,_,_), type(Att,TypeAtt,_),
+	pirate(_,Def,OldHp,_), type(Def,TypeDef,_), 
+	
+	weak(TypeDef,TypeAtt), 
+	damage(Att,W), W1 is 3*W/2, NewHp is OldHp - W1,
+	
+	write(Att), write(' menyerang '), write(Def), nl,
+	write('Serangan yang bagus!'),nl,
+	retract(pirate(Kode,Def,OldHp,Opp)),
+	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+
+normalAtt(Att,Def):- % Att dan Def bertipe sama
+	
+	pirate(_,Att,_,_),
+	pirate(Kode,Def,OldHp,Opp),
+	
+	damage(Att,W), NewHp is OldHp - W,
+	
+	write(Att), write(' menyerang '), write(Def), nl,
+	retract(pirate(Kode,Def,OldHp,Opp)),
+	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+
+
+%%%%%%%%%%%%%%%%%%% Special Attack %%%%%%%%%%%%%%%%%%%
+specialAtt(Att,Def) :- % Att lemah dari Def, damage diterima Def - 50%
+	
+	pirate(_,Att,_,_), type(Att,TypeAtt,Aksi), 
+	pirate(_,Def,OldHp,_), type(Def,TypeDef,_), 
+	
+	weak(TypeAtt,TypeDef), 
+	skill(Att,W), W1 is W/2, NewHp is OldHp - W1,
+	
+	write(Att), write(' menggunakan '), write(Aksi), write(' !!'), nl,
+	write('Ah. . . Serangannya kurang bagus, kapten!'), nl,
+	retract(pirate(Kode,Def,OldHp,Opp)),
+	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+
+specialAtt(Att,Def):- % Def lemah dari Att, damage diterima Def + 50%
+	
+	pirate(_,Att,_,_), type(Att,TypeAtt,Aksi),
+	pirate(_,Def,OldHp,_), type(Def,TypeDef,_), 
+	
+	weak(TypeDef,TypeAtt), 
+	skill(Att,W), W1 is 3*W/2, NewHp is OldHp - W1,
+	
+	write(Att), write(' menggunakan '), write(Aksi), write(' !!'), nl,
+	write('Astaga! Serangan yang sangat hebat!!'), nl,
+	retract(pirate(Kode,Def,OldHp,Opp)),
+	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+
+specialAtt(Att,Def):- % Att dan Def bertipe sama
+	
+	pirate(_,Att,_,_), type(Att,_,Aksi),
+	pirate(Kode,Def,OldHp,Opp), type(Def,_,_),
+	
+	skill(Att,W), NewHp is OldHp - W,
+	
+	write(Att), write(' menggunakan '), write(Aksi), write(' !!'), nl,
+	retract(pirate(Kode,Def,OldHp,Opp)),
+	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+
+%%%%%%%%%%%%%%%%%%% Pengolahan Inventory %%%%%%%%%%%%%%%%%%%
+% add item pada list
 add(X,[],[X]).
-add(X, [H|T], T2) :-
+add(X, [_|T], T2) :-
 	add(X, T, T2).
 
 % sub( indeks yang mau, list input, list hasil)
@@ -293,7 +232,7 @@ sub(X, [H|T], [H|T2]) :-
 	sub(X, T, T2), !.
 
 %add_inv( indeks pirate yang mau di tambah)
-add_inv(X) :-
+add_inv(_) :-
 	inventory(6,_),
 	write('Kapal sudah penuh kapten!'),nl,
 	write('Usir salah satu kru!'),!.
@@ -310,7 +249,7 @@ add_inv(X) :-
 	pirate(X,NAME,_,0),
 	legend(NAME),
 	invEnemy(A, CurrInv),
-	B is A +1,
+	B is A+1,
 	add(X,CurrInv,NewInv),
 	health(NAME, H),
 	retract(invEnemy(A, CurrInv)),
@@ -337,23 +276,23 @@ sub_inv(X) :-
 	retract(invEnemy(A, CurrInv)),
 	asserta(invEnemy(B, NewInv)),!.
 
-print_inventori([]),!.
-print_inventori([H|Sisa]) :-
+print_inventory([]).
+print_inventory([H|Sisa]) :-
     pirate(H,NAME,HEALTH,1),
-    type(NAME,TYPE), 
+    type(NAME,TYPE,_), 
     write('Nama             : '),
     write(NAME), nl,
     write('Health           : '),
     write(HEALTH), nl,
     write('Tipe             : '),
     write(TYPE), nl, nl, 
-	print_inventori(Sisa).
+	print_inventory(Sisa).
 
-print_enemy([]) ,!.	
+print_enemy([]):-!.	
 print_enemy([H|Sisa]) :-
     pirate(H,NAME, HEALTH, 0),
     legend(NAME), 
-    type(NAME,TYPE), 
+    type(NAME,TYPE,_), 
     write('Nama             : '),
     write(NAME), nl,
     write('Health           : '),
