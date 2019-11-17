@@ -8,11 +8,9 @@
 :-dynamic(is_attack/1).
 :-dynamic(is_specMe/2).
 :-dynamic(is_specEnemy/2).
-:-dynamic(turn/1).
 :-dynamic(can_run/1).
 
 % Inisialisasi dynamic predicate
-turn(0).
 is_attack(0).
 is_battle(0).
 is_start(0).
@@ -71,8 +69,12 @@ start :-
     write('~~~~~~~~~~~~~~~     Selamat datang di Lautan Kasatu!                  '),nl,
     write('                    Dapatkah Anda menemukan Onemon?                   '),nl,
     write('                 Berhati-hatilah! Lautan ini berbahaya!  ~~~~~~~~~~~~~'),nl,nl,
-    write('                       > Tekan tombol ENTER <'),
-    get0(_), help, retract(pirLoc(133,0,0)), asserta(pirLoc(133,1,2)), random_putt,!.
+    write('                          > Tekan ENTER <'),
+    get0(_), inventory(_,[H|_]), pirate(H,Name,_,_),nl,nl,nl,
+    write('Hai! Perkenalkan ini kru pertama anda, '), write(Name),nl,
+    write(Name), write(' adalah seorang fighter.'),nl,nl,
+    write('> Tekan ENTER <'),get0(_),
+    help, random_putt,!.
 
 % Tampil peta
 map :- is_start(1), kompas, printmap(0,0).

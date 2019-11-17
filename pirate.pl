@@ -61,7 +61,7 @@ inventory(1,[130]).
 % invEnemy(Jumlah, List)
 invEnemy(2,[141,142]).
 % invTotal(List)
-invTotal([131,132,134,135,136,137,138,139,140,141,142]).
+invTotal([131,132,133,134,135,136,137,138,139,140,141,142]).
 printLocc :- invTotal(List), printLoc(List).
 printLoc([]) :- !.
 printLoc([Idx|Tail]) :-
@@ -107,6 +107,7 @@ put_pirate(Idx):-
 % normal(sanji).
 % normal(nami).
 % normal(doflamingo).
+% normal(jinbei).
 
 /* legend(X) artinya X merupakan Pirate tipe legend */
 legend(bigMama).
