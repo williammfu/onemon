@@ -10,32 +10,34 @@
 % Inisialisasi pirate
 % pirate(kode,name,health, kepemilikan)
 % normal = kode 130 - 139
-pirate(130, luffy, 73, 1).
-pirate(131, usop, 70, 1).
-pirate(132, chopper, 48, 1).
-pirate(133, zoro, 43, 0).
-pirate(134, rayleigh,42, 1).
-pirate(135, robin, 75, 1).
-pirate(136, franky, 41, 1).
-pirate(137, sanji, 38, 0).
-pirate(138, nami, 46, 0).
+pirate(130, luffy, 78, 1).
+pirate(131, usop, 70, 0).
+pirate(132, chopper, 60, 0).
+pirate(133, zoro, 63, 0).
+pirate(134, rayleigh,62, 0).
+pirate(135, robin, 75, 0).
+pirate(136, franky, 59, 0).
+pirate(137, sanji, 58, 0).
+pirate(138, nami, 66, 0).
 pirate(139, doflamingo, 71, 0).
+pirate(140, jinbei, 60, 0).
 
 % legendary = kode 140 - 144
-pirate(140, bigMama, 20, 0).
-pirate(141, rakhamon, 288, 0).
+pirate(141, bigMama, 247, 0).
+pirate(142, rakhamon, 288, 0).
 
 /* health(X,Y) artinya Pirate X memiliki initial health senilai Y */
 health(luffy,73).
 health(usop,70).
-health(chopper,48).
-health(zoro,43).
-health(rayleigh,38).
+health(chopper,50).
+health(zoro,53).
+health(rayleigh,52).
 health(robin,75).
-health(franky,41).
-health(sanji,33).
+health(franky,49).
+health(sanji,48).
 health(nami,46).
 health(doflamingo,71).
+health(jinbei,50).
 health(bigMama,247).
 health(rakhamon,288).
 
@@ -52,13 +54,14 @@ pirLoc(138, 0, 0).
 pirLoc(139, 0, 0).
 pirLoc(140, 0, 0).
 pirLoc(141, 0, 0).
+pirLoc(142, 0, 0).
 
 % inventory(Jumlah, List)
-inventory(2,[130,132]).
+inventory(1,[130]).
 % invEnemy(Jumlah, List)
-invEnemy(2,[140,141]).
+invEnemy(2,[141,142]).
 % invTotal(List)
-invTotal([131,132,133,134,135,136,137,138,139,140,141]).
+invTotal([131,132,134,135,136,137,138,139,140,141,142]).
 printLocc :- invTotal(List), printLoc(List).
 printLoc([]) :- !.
 printLoc([Idx|Tail]) :-
@@ -122,6 +125,7 @@ type(zoro,swordsman, santoryu).
 type(robin,swordsman, seis_Fleur).
 type(franky,bandit, coup_De_Vent).
 type(doflamingo,bandit, ito_ito_no_mi).
+type(jinbei, cyborg, kenbunshoku).
 type(rakhamon,cyborg, ekUsuPUroshion).
 
 % weak (tipe , kelemahan tipe tsb)
@@ -133,19 +137,21 @@ weak(bandit, soldier).
 weak(soldier, cyborg).
 
 /* damage(X,Y) artinya X menimbulkan damage sebesar Y */
-damage(luffy,22).
+damage(luffy,27).
 damage(usop,28).
 damage(chopper,36).
-damage(zoro,44).
+damage(zoro,38).
 damage(rayleigh,36).
 damage(robin,28).
 damage(franky,20).
 damage(sanji,28).
-damage(nami,36).
-damage(doflamingo,44).
+damage(nami,34).
+damage(doflamingo,35).
+damage(jinbei,32).
+
 % legendary : damage lebih besar
-damage(bigMama,56).
-damage(rakhamon,58).
+damage(bigMama,52).
+damage(rakhamon,60).
 
 /* skill(X,Y) artinya X memiliki nilai damage skill sebesar Y */ 
 skill(X,Y) :- 
@@ -317,23 +323,16 @@ sub_inv(X) :-
 
 print_inventory([]).
 print_inventory([H|Sisa]) :-
-    pirate(H,NAME,HEALTH,1),
-    type(NAME,TYPE,_),
+    pirate(H,NAME,HEALTH,1), type(NAME,TYPE,_),
     write(NAME), nl,
-    write('Health           : '),
-    write(HEALTH), nl,
-    write('Tipe             : '),
-    write(TYPE), nl, nl, 
+    write('Health           : '), write(HEALTH), nl,
+    write('Tipe             : '), write(TYPE), nl, nl, 
 	print_inventory(Sisa).
 
 print_enemy([]):-!.	
 print_enemy([H|Sisa]) :-
-    pirate(H,NAME, HEALTH, 0),
-    legend(NAME), 
-    type(NAME,TYPE,_),
+    pirate(H,NAME, HEALTH, 0), legend(NAME), type(NAME,TYPE,_),
     write(NAME), nl,
-    write('Health           : '),
-    write(HEALTH), nl,
-    write('Tipe             : '),
-    write(TYPE), nl, nl,
-	print_enemy(Sisa).
+    write('Health           : '), write(HEALTH), nl,
+    write('Tipe             : '), write(TYPE), nl, nl,
+	print_enemy(Sisa). %rekursif

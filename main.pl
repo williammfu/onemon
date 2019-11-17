@@ -72,7 +72,7 @@ start :-
     write('                    Dapatkah Anda menemukan Onemon?                   '),nl,
     write('                 Berhati-hatilah! Lautan ini berbahaya!  ~~~~~~~~~~~~~'),nl,nl,
     write('                       > Tekan tombol ENTER <'),
-    get0(_), help, retract(pirLoc(131,0,0)), asserta(pirLoc(131,1,2)),!.
+    get0(_), help, retract(pirLoc(133,0,0)), asserta(pirLoc(133,1,2)), random_putt,!.
 
 % Tampil peta
 map :- is_start(1), kompas, printmap(0,0).
@@ -99,10 +99,17 @@ check_pos :-
     write('Bagian ini aman, kapten!'),!.
 
 % Bergerak
-n :- is_start(1), is_battle(0), move(n), check_pos.
-w :- is_start(1), is_battle(0), move(w), check_pos.
-e :- is_start(1), is_battle(0), move(e), check_pos.
-s :- is_start(1), is_battle(0), move(s), check_pos.
+n :- is_start(1), playLoc(1,_), write('Anda mau kemana?!'),nl,write('Fokus, kapten!'), nl,!. 
+n :- is_start(1), is_battle(0), leave_pirate, move(n), check_pos.
+
+w :- is_start(1), playLoc(_,1), nl, write('Anda mau kemana?!'),nl,write('Fokus, kapten!'), nl,!.
+w :- is_start(1), is_battle(0), leave_pirate, move(w), check_pos.
+
+e :- is_start(1), playLoc(_,10), nl, write('Anda mau kemana?!'),nl,write('Fokus, kapten!'), nl,!.
+e :- is_start(1), is_battle(0), leave_pirate, move(e), check_pos.
+
+s :- is_start(1), playLoc(10,_), nl, write('Anda mau kemana?!'),nl,write('Fokus, kapten!'), nl,!.
+s :- is_start(1), is_battle(0), leave_pirate, move(s), check_pos.
 
 % Status
 status :- 
@@ -144,8 +151,7 @@ check_fight :-
     pirate(Idx,Name,CurrHp,_), CurrHp =< 0, % Nyawa musuh habis = menang
     nl, write('Selamat, kapten!'),nl,
     write(Name), write(' berhasil dikalahkan'),nl, 
-    retract(is_battle(1)),
-    asserta(is_battle(0)),menang_battle,!.
+    retract(is_battle(1)), asserta(is_battle(0)),menang_battle,!.
 
 % Kalau kalah 
 check_fight :- 
@@ -153,11 +159,11 @@ check_fight :-
     pirate(Idx,Name,CurrHp,_), CurrHp =< 0, % Nyawa kru habis = kalah
     nl, write('Lautan menangis, kapten. . .'),nl,
     write(Name), write(' kalah dalam pertarungan'),nl,
-    retract(is_battle(1)), asserta(is_battle(0)), kalah. % Ubah statenya
+    retract(is_battle(1)), asserta(is_battle(0)), kalah,!. % Ubah statenya
 
 % Kalau belum ada yang menang/ kalah, musuh serang balik
 check_fight :- 
-    is_attack(1),
+    is_attack(1), is_battle(1),
     is_pick(1,IdxMe), pirate(IdxMe,Me,_,_),
     playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Opp,_,_), 
     random(1,4,Chance), randomAtt(Opp,Me,Chance),!.
@@ -173,15 +179,14 @@ menang_battle :-
     do_quit(y),!.
     
 menang_battle :-
-    is_pick(_,Idx), is_specMe(_,_), is_specEnemy(_,_),
-    playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Name,Hp,_), Hp=< 0,
+    is_pick(_,Idx),
+    playLoc(X,Y), pirLoc(IdxLose,X,Y), pirate(IdxLose,Name,Hp,_), Hp =< 0,
     write('Apakah anda mau merekrut '), write(Name), write('?'),nl,
-    write('ketik capture. untuk merekrut'),
+    write('ketik capture. untuk merekrut; jika tidak mau, pindah saja'),
     retract(is_pick(_,Idx)), asserta(is_pick(0,999)),
-    retract(is_specMe(_,_)), asserta(is_specMe(0,999)),
-    retract(is_specEnemy(_,_)), asserta(is_specEnemy(0,999)).
+    after_fight,!.
 
-% Penuh af, drop salah satu yooooooo
+% Penanganan kasus penuh
 capture :-
     inventory(6,_),
 	write('Kapal sudah penuh kapten!'),nl,
@@ -191,26 +196,30 @@ capture :-
 capture :-
     playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Name,Hp,0), Hp =< 0, health(Name,InitHp),
     retract(pirate(Idx,Name,Hp,0)), asserta(pirate(Idx,Name,InitHp,1)),
-    inventory(N,_), N<6, 
-    add_inv(Idx),
+    retract(pirLoc(Idx,X,Y)), asserta(pirLoc(Idx,0,0)),
+    inventory(N,_), N<6, invTotal(OldList), 
+    sub(Idx,OldList,NewList), retract(invTotal(OldList)), asserta(invTotal(NewList)), add_inv(Idx),
     write('Selamat bergabung dalam kru, '), write(Name), write('!'),!.
 
 drop(Name) :-
     pirate(Idx,Name,Hp,1), Hp =< 0, health(Name, InitHp), retract(pirate(Idx,Name,Hp,1)),
     asserta(pirate(Idx,Name,InitHp,1)), sub_inv(Idx),
     write(Name),write(' telah melompat dari papan :('), nl, capture,!.
-    
+
+after_fight :-
+    is_specMe(_,_), is_specEnemy(_,_), can_run(_), is_attack(_),
+    retract(is_attack(_)), asserta(is_attack(0)),
+    retract(is_specMe(_,_)), asserta(is_specMe(0,999)),
+    retract(is_specEnemy(_,_)), asserta(is_specEnemy(0,999)),
+    retract(can_run(_)), asserta(can_run(1)).
+
 kalah :-
-    is_pick(_,Idx), is_specMe(_,_), is_specEnemy(_,_),
-    pirate(Idx,Name,HpAkhir,1), HpAkhir =< 0,
-    health(Name,HP), 
-    sub_inv(Idx),
+    is_pick(_,Idx), pirate(Idx,Name,HpAkhir,1), HpAkhir =< 0,
+    health(Name,HP), sub_inv(Idx),
     retract(pirate(Idx,Name,HpAkhir,1)),
     asserta(pirate(Idx,Name,HP,0)), 
     retract(is_pick(_,Idx)), asserta(is_pick(0,999)),
-    retract(is_specMe(_,_)), asserta(is_specMe(0,999)),
-    retract(is_specEnemy(_,_)), asserta(is_specEnemy(0,999)),
-    check_inv.
+    after_fight, random_putt, check_inv.
 
 check_inv :-
     inventory(Nb,_), Nb>=1, write('Jangan sedih, Kapten!'), nl, write('Masih banyak kru lain di Lautan Kasatu!'), !.
@@ -227,7 +236,7 @@ attack :-
     is_battle(1), is_attack(0), is_pick(1,IdxMe), pirate(IdxMe,Me,_,_),
     playLoc(X,Y), pirLoc(IdxOpp,X,Y), pirate(IdxOpp,Opp,_,_),
     normalAtt(Me,Opp), retract(is_attack(0)), asserta(is_attack(1)),!,
-    check_fight.
+    check_fight,!.
 attack :-
     is_battle(0),
     write('Anda sudah kalah dalam pertarungan, Kapten!'), nl.    
@@ -285,6 +294,14 @@ pick(Name) :- % Sesuai syarat
 pick(_) :- % Milih gabener
     write('Bukan kru!'),nl,
     write('Pilih yang lain, kapten!').
+
+% Leave Pirate
+leave_pirate :-
+    playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Name,Hp,_), health(Name,InitHp),
+    retract(pirate(Idx,Name,Hp,_)), asserta(pirate(Idx,Name,InitHp,_)),
+    random_putt,!.
+leave_pirate :-
+    write(' ').
 
 % Quit
 quit :-
