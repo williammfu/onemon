@@ -1,12 +1,10 @@
 /*Implementasi peta dalam permainan*/
 % Variabel dynamic (nilainya berubah-ubah)
 :- dynamic(playLoc/2).
-:- dynamic(is_heal/1).
 
 /*Inisialisasi awal*/
 playLoc(1,1). %Posisi awal player selalu (1,1)
 skyLoc(5,6).
-is_heal(0).
 
 /*Deklarasi Rules*/
 kompas :- 
@@ -88,22 +86,3 @@ move(w) :-
     write('Berlayar ke barat. . .'),nl,
     retract(playLoc(X,Y)),
     asserta(playLoc(X,Prev)),!.    
-
-heal :-
-
-    is_heal(1),
-    write('Tidak bisa lagi kapten!'),nl,!.
-heal :-
-
-    is_heal(_),
-    playLoc(X,Y),skyLoc(A,B),
-    X\==A, Y\==B,
-    write('Kami tidak berada di Skypiea, kapten!'),nl,!.
- 
-heal :- % perlu diedit
-
-    is_heal(0),
-    write('Anda memutuskan untuk menginap di Skypiea'),nl,
-    write('Kru kapal bersemangat kembali kapten!'),nl,
-    retract(is_heal(0)),
-    asserta(is_heal(1)),!.
