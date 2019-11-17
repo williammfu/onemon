@@ -11,18 +11,18 @@
 % pirate(kode,name,health, kepemilikan)
 % normal = kode 130 - 139
 pirate(130, luffy, 73, 1).
-pirate(131, usop, 70, 0).
-pirate(132, chopper, 48, 0).
+pirate(131, usop, 70, 1).
+pirate(132, chopper, 48, 1).
 pirate(133, zoro, 43, 0).
-pirate(134, rayleigh,42, 0).
-pirate(135, robin, 75, 0).
-pirate(136, franky, 41, 0).
+pirate(134, rayleigh,42, 1).
+pirate(135, robin, 75, 1).
+pirate(136, franky, 41, 1).
 pirate(137, sanji, 38, 0).
 pirate(138, nami, 46, 0).
 pirate(139, doflamingo, 71, 0).
 
 % legendary = kode 140 - 144
-pirate(140, bigMama, 247, 0).
+pirate(140, bigMama, 20, 0).
 pirate(141, rakhamon, 288, 0).
 
 /* health(X,Y) artinya Pirate X memiliki initial health senilai Y */
@@ -54,17 +54,17 @@ pirLoc(140, 0, 0).
 pirLoc(141, 0, 0).
 
 % inventory(Jumlah, List)
-inventory(2,[130]).
+inventory(2,[130,132]).
 % invEnemy(Jumlah, List)
 invEnemy(2,[140,141]).
 % invTotal(List)
 invTotal([131,132,133,134,135,136,137,138,139,140,141]).
-% printLocc :- invTotal(List), printLoc(List).
-% printLoc([]) :- !.
-% printLoc([Idx|Tail]) :-
-% 	pirate(Idx,Name,_,_), pirLoc(Idx,X,Y),
-% 	write(Name),write('('), write(X),write(','),write(Y),write(')'),nl, 
-% 	printLoc(Tail).
+printLocc :- invTotal(List), printLoc(List).
+printLoc([]) :- !.
+printLoc([Idx|Tail]) :-
+	pirate(Idx,Name,_,_), pirLoc(Idx,X,Y),
+	write(Name),write('('), write(X),write(','),write(Y),write(')'),nl, 
+	printLoc(Tail).
 
 % Taruh pirate di peta secara random
 is_ok(0).
@@ -81,8 +81,8 @@ random_put([Idx|Tail]) :-
 	repeat,
 		put_pirate(Idx),
 		check_put(Idx), 
-	done,
-	random_put(Tail).
+	done, % check final state : oke = engga bertubrukan
+	random_put(Tail). % rekursif
 
 done :- is_ok(1).
 
@@ -111,23 +111,26 @@ legend(rakhamon).
 
 /* type(X,Y,Z) artinya X memiliki type Y dengan nama serangan Z*/
 /* jenis type: fighter, shooter, swordsman */
-type(luffy,fighter, rubber_Rush).
-type(usop,shooter, usopp_Boomerang).
-type(chopper,fighter, rumble_Ball).
+type(luffy, fighter, rubber_Rush).
+type(sanji, fighter, black_Leg_Style).
+type(bigMama, shooter, haoshoku_Haki).
+type(nami, shooter, clima_Tact).
+type(usop, shooter, usopp_Boomerang).
+type(chopper,soldier, rumble_Ball).
+type(rayleigh,soldier, busoshoku_Haki).
 type(zoro,swordsman, santoryu).
-type(rayleigh,swordsman, busoshoku_Haki).
 type(robin,swordsman, seis_Fleur).
-type(franky,fighter, coup_De_Vent).
-type(sanji,fighter, black_Leg_Style).
-type(nami,shooter, clima_Tact).
-type(doflamingo,fighter, ito_ito_no_mi).
-type(bigMama,shooter, haoshoku_Haki).
-type(rakhamon,shooter, ekusupuroshion).
+type(franky,bandit, coup_De_Vent).
+type(doflamingo,bandit, ito_ito_no_mi).
+type(rakhamon,cyborg, ekUsuPUroshion).
 
 % weak (tipe , kelemahan tipe tsb)
 weak(fighter,shooter).
 weak(shooter,swordsman).
 weak(swordsman,fighter).
+weak(cyborg, bandit).
+weak(bandit, soldier).
+weak(soldier, cyborg).
 
 /* damage(X,Y) artinya X menimbulkan damage sebesar Y */
 damage(luffy,22).
@@ -259,9 +262,10 @@ specialAtt(Att,Def):- % Att dan Def bertipe sama
 
 %%%%%%%%%%%%%%%%%%% Pengolahan Inventory %%%%%%%%%%%%%%%%%%%
 % add item pada list
+
 add(X,[],[X]).
-add(X, [_|T], T2) :-
-	add(X, T, T2).
+add(X,[Y|T],[Y|T2]):-
+    add(X,T,T2).
 
 % sub( indeks yang mau, list input, list hasil)
 sub(_, [], []).
@@ -272,11 +276,6 @@ sub(X, [H|T], [H|T2]) :-
 	sub(X, T, T2), !.
 
 %add_inv( indeks pirate yang mau di tambah)
-add_inv(_) :-
-	inventory(6,_),
-	write('Kapal sudah penuh kapten!'),nl,
-	write('Usir salah satu kru!'),!.
-
 add_inv(X) :-
 	pirate(X,_,_,1),
 	inventory(A, CurrInv),
@@ -285,17 +284,17 @@ add_inv(X) :-
 	retract(inventory(A, CurrInv)),
 	asserta(inventory(B, NewInv)),!.
 
-add_inv(X) :-
-	pirate(X,NAME,_,0),
-	legend(NAME),
-	invEnemy(A, CurrInv),
-	B is A+1,
-	add(X,CurrInv,NewInv),
-	health(NAME, H),
-	retract(invEnemy(A, CurrInv)),
-	asserta(invEnemy(B, NewInv)),
-	retract(pirate(X,NAME,_,0)),
-	asserta(pirate(X,NAME,H,1)),!.
+% add_inv(X) :-
+% 	pirate(X,NAME,_,0),
+% 	legend(NAME),
+% 	invEnemy(A, CurrInv),
+% 	B is A+1,
+% 	add(X,CurrInv,NewInv),
+% 	health(NAME, H),
+% 	retract(invEnemy(A, CurrInv)),
+% 	asserta(invEnemy(B, NewInv)),
+% 	retract(pirate(X,NAME,_,0)),
+% 	asserta(pirate(X,NAME,H,1)),!.
 
 	
 %sub_inv (indeks pirate yang mati)
@@ -314,7 +313,7 @@ sub_inv(X) :-
 	B is A-1,
 	sub(X,CurrInv,NewInv),
 	retract(invEnemy(A, CurrInv)),
-	asserta(invEnemy(B, NewInv)),!.
+	asserta(invEnemy(B, NewInv)).
 
 print_inventory([]).
 print_inventory([H|Sisa]) :-
