@@ -90,15 +90,17 @@ move(w) :-
     asserta(playLoc(X,Prev)),!.    
 
 heal :-
+
     is_heal(1),
     write('Tidak bisa lagi kapten!'),nl,!.
 heal :-
+
     is_heal(_),
     playLoc(X,Y),skyLoc(A,B),
     X\==A, Y\==B,
     write('Kami tidak berada di Skypiea, kapten!'),nl,!.
-
-heal :-
+ 
+heal :- % perlu diedit
 
     is_heal(0),
     write('Anda memutuskan untuk menginap di Skypiea'),nl,

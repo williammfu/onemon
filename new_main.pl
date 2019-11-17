@@ -6,6 +6,7 @@
 :-dynamic(is_battle/1).
 :-dynamic(is_pick/2).
 :-dynamic(is_attack/1).
+:-dynamic(is_specMe/2).
 :-dynamic(is_specEnemy/2).
 :-dynamic(turn/1).
 :-dynamic(can_run/1).
@@ -16,6 +17,7 @@ is_attack(0).
 is_battle(0).
 is_start(0).
 is_pick(0,999).
+is_specMe(0,999).
 is_specEnemy(0,999).
 can_run(1).
 
@@ -70,9 +72,7 @@ start :-
     write('                    Dapatkah Anda menemukan Onemon?                   '),nl,
     write('                 Berhati-hatilah! Lautan ini berbahaya!  ~~~~~~~~~~~~~'),nl,nl,
     write('                       > Tekan tombol ENTER <'),
-    get0(_), help, 
-    retract(pirLoc(133,0,0)),
-    asserta(pirLoc(133,1,2)),!.
+    get0(_), help, random_putt,!.
 
 % Tampil peta
 map :- is_start(1), kompas, printmap(0,0).
@@ -115,11 +115,11 @@ status :-
     print_enemy(Enemy).
 
 % Enemy Status
-% Khusus digunakan saat 
+% Khusus digunakan saat awal battle
 enemy_status(Idx) :-
     nl,
     pirate(Idx,Name,Hp,_),type(Name,Type,_),
-    write('====== Musuh Anda ======'),nl,nl,
+    write('Musuh Anda -------'),nl,
     write(Name),nl,
     write('Health  : '),write(Hp),nl,
     write('Type    : '),write(Type),nl,!.
@@ -169,11 +169,12 @@ attack :-
 
 specialAttack :- is_pick(0,_),write('Anda belum memilih kru , kapten!'),!.
 specialAttack :-
-    is_attack(0), is_pick(1,IdxMe), pirate(IdxMe,Me,_,_),
-    playLoc(X,Y), pirLoc(IdxOpp,X,Y), pirate(IdxOpp,Opp,_,_),
+    is_attack(0), is_pick(1,IdxMe), is_specMe(0,_),
+    pirate(IdxMe,Me,_,_), playLoc(X,Y), pirLoc(IdxOpp,X,Y), pirate(IdxOpp,Opp,_,_),
     specialAtt(Me,Opp), retract(is_attack(0)), asserta(is_attack(1)), 
+    retract(is_specMe(0,_)),asserta(is_specMe(1,IdxMe)),
     check_fight,!.
-    % random(1,4,Chance), randomAtt(Opp,Me,Chance),!. 
+specialAttack :- write('Tidak bisa lagi, kapten!').
 
 randomAtt(Opp,Me,1) :-
     is_attack(1),
@@ -209,10 +210,11 @@ pick(_) :-
     write('Anda sudah memilih '), write(Name),!.
 
 pick(Name) :- % Sesuai syarat
-    is_battle(1), is_pick(0,_),
+    is_battle(1), is_pick(0,_), is_specMe(_,_),
     pirate(Idx,Name,_,1),
     write('Anda memilih '),write(Name),
-    retract(is_pick(0,_)),asserta(is_pick(1,Idx)),!.
+    retract(is_pick(0,_)),asserta(is_pick(1,Idx)),
+    retract(is_specMe(_,_)), asserta(is_specMe(0,Idx)),!.
 
 pick(_) :- % Milih gabener
     write('Bukan kru!'),nl,

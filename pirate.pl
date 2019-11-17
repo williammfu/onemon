@@ -5,6 +5,7 @@
 :-dynamic(inventory/2).
 :-dynamic(invEnemy/2).
 :-dynamic(invTotal/1).
+:-dynamic(is_ok/1).
 
 % Inisialisasi pirate
 % pirate(kode,name,health, kepemilikan)
@@ -23,6 +24,20 @@ pirate(139, doflamingo, 71, 0).
 % legendary = kode 140 - 144
 pirate(140, bigMama, 247, 0).
 pirate(141, rakhamon, 288, 0).
+
+/* health(X,Y) artinya Pirate X memiliki initial health senilai Y */
+health(luffy,73).
+health(usop,70).
+health(chopper,48).
+health(zoro,43).
+health(rayleigh,38).
+health(robin,75).
+health(franky,41).
+health(sanji,33).
+health(nami,46).
+health(doflamingo,71).
+health(bigMama,247).
+health(rakhamon,288).
 
 % pirLoc(Kode, Posisi X, Posisi Y)
 % initial state : lokasi 0,0 (undefined)
@@ -44,30 +59,39 @@ inventory(2,[130]).
 invEnemy(2,[140,141]).
 % invTotal(List)
 invTotal([131,132,133,134,135,136,137,138,139,140,141]).
+% printLocc :- invTotal(List), printLoc(List).
+% printLoc([]) :- !.
+% printLoc([Idx|Tail]) :-
+% 	pirate(Idx,Name,_,_), pirLoc(Idx,X,Y),
+% 	write(Name),write('('), write(X),write(','),write(Y),write(')'),nl, 
+% 	printLoc(Tail).
 
 % Taruh pirate di peta secara random
-random_put(131) :- put_pirate(131),!.
-random_put(Idx) :-
+is_ok(0).
+check_put(Idx) :- pirLoc(Idx,X,Y), skyLoc(A,B), X==A, Y==B,!.
+check_put(Idx) :- pirLoc(Idx,X,Y), playLoc(A,B), X==A, Y==B,!.
+check_put(Idx) :- pirLoc(Idx,X,Y), pirLoc(Other,A,B), Idx\==Other, X==A, Y==B,!.
+check_put(_) :- is_ok(0), retract(is_ok(0)), asserta(is_ok(1)).
 
-	put_pirate(Idx),
-	PrevIdx is Idx - 1,
-	random_put(PrevIdx).
+random_putt :- invTotal(List), random_put(List),!.
+random_put([]) :- !.
+random_put([Idx|Tail]) :- 
 	
+	retract(is_ok(_)), asserta(is_ok(0)),
+	repeat,
+		put_pirate(Idx),
+		check_put(Idx), 
+	done,
+	random_put(Tail).
+
+done :- is_ok(1).
+
 put_pirate(Idx):-
 
-    repeat,
-        random(1,10,X), random(1,10,Y),
-        pirLoc(Idx,_,_),
-        retract(pirLoc(Idx,_,_)),
-        asserta(pirLoc(Idx,X,Y)),
-    okayLoc(Idx).
-
-okayLoc(Idx):-
-
-    pirLoc(Idx,X,Y), pirLoc(Other,A,B),
-	Idx \== Other, X==A, Y==B,!,fail,
-    skyLoc(C,D),
-    X==C, Y==D,!,fail.
+    random(1,10,X), random(1,10,Y),
+    pirLoc(Idx,_,_),
+    retract(pirLoc(Idx,_,_)),
+    asserta(pirLoc(Idx,X,Y)).
 
 /* normal(X) artinya X merupakan Pirate tipe normal */
 % normal(luffy).
@@ -82,23 +106,8 @@ okayLoc(Idx):-
 % normal(doflamingo).
 
 /* legend(X) artinya X merupakan Pirate tipe legend */
-
 legend(bigMama).
 legend(rakhamon).
-
-/* health(X,Y) artinya Pirate X memiliki health senilai Y */
-health(luffy,73).
-health(usop,70).
-health(chopper,48).
-health(zoro,43).
-health(rayleigh,38).
-health(robin,75).
-health(franky,41).
-health(sanji,33).
-health(nami,46).
-health(doflamingo,71).
-health(bigMama,247).
-health(rakhamon,288).
 
 /* type(X,Y,Z) artinya X memiliki type Y dengan nama serangan Z*/
 /* jenis type: fighter, shooter, swordsman */
@@ -141,6 +150,30 @@ skill(X,Y) :-
 	Y is 3*Z/2.
 
 %%%%%%%%%%%%%%%%%%% Normal Attack %%%%%%%%%%%%%%%%%%%
+show_stats(Opp,Att) :-
+	
+	nl,pirate(_,Opp,HpOpp,_),type(Opp,TypeOpp,_),
+	pirate(_,Att,HpAtt,_),type(Att,TypeAtt,_),
+	HpOpp >= 0, HpAtt >= 0,
+	write(Opp),nl,
+	write('Health: '),write(HpOpp),nl,
+	write('Type: '),write(TypeOpp),nl,nl,
+	write(Att),nl,
+	write('Health: '),write(HpAtt),nl,
+	write('Type: '),write(TypeAtt),nl,nl,!.
+
+show_stats(Opp,Att) :-
+
+	nl,pirate(_,Opp,HpOpp,_),type(Opp,TypeOpp,_),
+	pirate(_,Att,HpAtt,_),type(Att,TypeAtt,_),
+	HpOpp =< 0, HpAtt >= 0,
+	write(Opp),nl,
+	write('Health: '),write('0'),nl,
+	write('Type: '),write(TypeOpp),nl,nl,
+	write(Att),nl,
+	write('Health: '),write(HpAtt),nl,
+	write('Type: '),write(TypeAtt),nl,nl,!.
+
 normalAtt(Att,Def) :- % Att lemah dari Def, damage diterima Def - 50%
 	
 	pirate(_,Att,_,_), type(Att,TypeAtt,_), 
@@ -151,8 +184,10 @@ normalAtt(Att,Def) :- % Att lemah dari Def, damage diterima Def - 50%
 	
 	write(Att), write(' menyerang '), write(Def), nl,
 	write('Serangan yang lemah. . .'),nl,
+	write('Damage : '),write(W1),nl,
 	retract(pirate(Kode,Def,OldHp,Opp)),
-	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+	asserta(pirate(Kode,Def,NewHp,Opp)),
+	show_stats(Def,Att),!.
 
 normalAtt(Att,Def):- % Def lemah dari Att, damage diterima Def + 50%
 	
@@ -164,8 +199,9 @@ normalAtt(Att,Def):- % Def lemah dari Att, damage diterima Def + 50%
 	
 	write(Att), write(' menyerang '), write(Def), nl,
 	write('Serangan yang bagus!'),nl,
+	write('Damage : '),write(W1),nl,
 	retract(pirate(Kode,Def,OldHp,Opp)),
-	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+	asserta(pirate(Kode,Def,NewHp,Opp)),show_stats(Def,Att),!.
 
 normalAtt(Att,Def):- % Att dan Def bertipe sama
 	
@@ -175,8 +211,9 @@ normalAtt(Att,Def):- % Att dan Def bertipe sama
 	damage(Att,W), NewHp is OldHp - W,
 	
 	write(Att), write(' menyerang '), write(Def), nl,
+	write('Damage : '),write(W),nl,
 	retract(pirate(Kode,Def,OldHp,Opp)),
-	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+	asserta(pirate(Kode,Def,NewHp,Opp)),show_stats(Def,Att),!.
 
 
 %%%%%%%%%%%%%%%%%%% Special Attack %%%%%%%%%%%%%%%%%%%
@@ -190,8 +227,9 @@ specialAtt(Att,Def) :- % Att lemah dari Def, damage diterima Def - 50%
 	
 	write(Att), write(' menggunakan '), write(Aksi), write(' !!'), nl,
 	write('Ah. . . Serangannya kurang bagus, kapten!'), nl,
+	write('Damage : '),write(W1),nl,
 	retract(pirate(Kode,Def,OldHp,Opp)),
-	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+	asserta(pirate(Kode,Def,NewHp,Opp)),show_stats(Def,Att),!.
 
 specialAtt(Att,Def):- % Def lemah dari Att, damage diterima Def + 50%
 	
@@ -203,8 +241,9 @@ specialAtt(Att,Def):- % Def lemah dari Att, damage diterima Def + 50%
 	
 	write(Att), write(' menggunakan '), write(Aksi), write(' !!'), nl,
 	write('Astaga! Serangan yang sangat hebat!!'), nl,
+	write('Damage : '),write(W1),nl,
 	retract(pirate(Kode,Def,OldHp,Opp)),
-	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+	asserta(pirate(Kode,Def,NewHp,Opp)),show_stats(Def,Att),!.
 
 specialAtt(Att,Def):- % Att dan Def bertipe sama
 	
@@ -214,8 +253,9 @@ specialAtt(Att,Def):- % Att dan Def bertipe sama
 	skill(Att,W), NewHp is OldHp - W,
 	
 	write(Att), write(' menggunakan '), write(Aksi), write(' !!'), nl,
+	write('Damage : '),write(W),nl,
 	retract(pirate(Kode,Def,OldHp,Opp)),
-	asserta(pirate(Kode,Def,NewHp,Opp)),!.
+	asserta(pirate(Kode,Def,NewHp,Opp)),show_stats(Def,Att),!.
 
 %%%%%%%%%%%%%%%%%%% Pengolahan Inventory %%%%%%%%%%%%%%%%%%%
 % add item pada list
@@ -279,8 +319,7 @@ sub_inv(X) :-
 print_inventory([]).
 print_inventory([H|Sisa]) :-
     pirate(H,NAME,HEALTH,1),
-    type(NAME,TYPE,_), 
-    write('Nama             : '),
+    type(NAME,TYPE,_),
     write(NAME), nl,
     write('Health           : '),
     write(HEALTH), nl,
@@ -292,8 +331,7 @@ print_enemy([]):-!.
 print_enemy([H|Sisa]) :-
     pirate(H,NAME, HEALTH, 0),
     legend(NAME), 
-    type(NAME,TYPE,_), 
-    write('Nama             : '),
+    type(NAME,TYPE,_),
     write(NAME), nl,
     write('Health           : '),
     write(HEALTH), nl,
