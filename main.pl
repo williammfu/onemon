@@ -9,8 +9,10 @@
 :-dynamic(is_specMe/2).
 :-dynamic(is_specEnemy/2).
 :-dynamic(can_run/1).
+:-dynamic(is_heal/1).
 
 % Inisialisasi dynamic predicate
+is_heal(0).
 is_attack(0).
 is_battle(0).
 is_start(0).
@@ -76,7 +78,7 @@ start :-
     write('Hai! Perkenalkan ini kru pertama anda, '), write(Name),nl,
     write(Name), write(' adalah seorang fighter.'),nl,nl,
     write('> Tekan ENTER <'),get0(_),
-    help, random_putt,!.
+    help, random_putt, random_putt, !.
 
 % Tampil peta
 map :- is_start(1), kompas, printmap(0,0).
@@ -309,6 +311,26 @@ leave_pirate :-
     random_putt,!.
 leave_pirate :-
     write(' ').
+
+% Heal
+heal :- is_start(0),!,fail.
+heal :- is_heal(1),write('Tidak bisa lagi kapten!'),!.
+heal :-
+    is_heal(0),
+    playLoc(X,Y),skyLoc(A,B), X==A, Y==B,
+    write('Heal sukses!'),nl,
+    inventory(_,List),
+    do_heal(List).
+
+do_heal([]):-
+    retract(is_heal(0)), asserta(is_heal(1)).
+
+do_heal([Kode|Tail]):-
+    pirate(Kode, Nama, OldHealth, 1),
+    health(Nama, NewHealth),
+    retract(pirate(Kode, Nama, OldHealth, 1)),
+    asserta(pirate(Kode, Nama, NewHealth, 1)),
+    do_heal(Tail).
 
 % Quit
 quit :-

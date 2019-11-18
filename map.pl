@@ -4,7 +4,7 @@
 
 /*Inisialisasi awal*/
 playLoc(1,1). %Posisi awal player selalu (1,1)
-skyLoc(5,6).
+skyLoc(1,2).
 
 /*Deklarasi Rules*/
 kompas :- 
@@ -54,13 +54,31 @@ printmap(X,Y) :-
     write('~ '),
     Next is Y+1,
     printmap(X, Next),!.
-     
+
+move(n) :-
+    playLoc(X,Y), Prev is X-1,
+    skyLoc(A,B), A == Prev, B == Y,
+    write('Berlayar ke utara. . .'),nl,
+    write('Anda sedang berada di Skypiea!'),nl,
+    write('Gunakan perintah heal. untuk menyembuhkan kru anda!'),nl,
+    retract(playLoc(X,Y)),
+    asserta(playLoc(Prev,Y)),!.
+
 move(n) :-
     playLoc(X,Y),
     Prev is X-1,
     write('Berlayar ke utara. . .'),nl,
     retract(playLoc(X,Y)),
     asserta(playLoc(Prev,Y)),!.
+
+move(s) :-
+    playLoc(X,Y), Next is X+1,
+    skyLoc(A,B), A == Next, B == Y,
+    write('Berlayar ke selatan. . .'),nl,
+    write('Anda berada pada Skypiea!'),nl,
+    write('Gunakan perintah heal. untuk menyembuhkan kru anda!'),nl,
+    retract(playLoc(X,Y)),
+    asserta(playLoc(Next,Y)),!.
 
 move(s) :-
     playLoc(X,Y),
@@ -70,12 +88,30 @@ move(s) :-
     asserta(playLoc(Next,Y)),!.
 
 move(e) :-
+    playLoc(X,Y), Next is Y+1,
+    skyLoc(A,B), A == X, B == Next,
+    write('Berlayar ke timur. . .'),nl,
+    write('Anda berada pada Skypiea!'),nl,
+    write('Gunakan perintah heal. untuk menyembuhkan kru anda!'),nl,
+    retract(playLoc(X,Y)),
+    asserta(playLoc(X,Next)),!.
+
+move(e) :-
     playLoc(X,Y),
     Next is Y+1,
     write('Berlayar ke timur. . .'),nl,
     retract(playLoc(X,Y)),
     asserta(playLoc(X,Next)),!.
     
+move(w) :-
+    playLoc(X,Y), Next is Y+1,
+    skyLoc(A,B), A == X, B == Next,
+    write('Berlayar ke barat. . .'),nl,
+    write('Anda berada pada Skypiea!'),nl,
+    write('Gunakan perintah heal. untuk menyembuhkan kru anda!'),nl,
+    retract(playLoc(X,Y)),
+    asserta(playLoc(X,Next)),!.
+
 move(w) :-
     playLoc(X,Y),
     Prev is Y-1,
