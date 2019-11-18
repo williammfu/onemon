@@ -211,7 +211,7 @@ capture :-
 
 drop(Name) :-
     inventory(6,_),
-    pirate(Idx,Name,Hp,1), Hp =< 0, health(Name, InitHp), retract(pirate(Idx,Name,Hp,1)),
+    pirate(Idx,Name,Hp,1), health(Name, InitHp), retract(pirate(Idx,Name,Hp,1)),
     asserta(pirate(Idx,Name,InitHp,1)), sub_inv(Idx),
     write(Name),write(' telah melompat dari papan :('), nl, capture,!.
 

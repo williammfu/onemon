@@ -4,7 +4,7 @@
 
 /*Inisialisasi awal*/
 playLoc(1,1). %Posisi awal player selalu (1,1)
-skyLoc(1,2).
+skyLoc(5,6).
 
 /*Deklarasi Rules*/
 kompas :- 

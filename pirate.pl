@@ -10,7 +10,7 @@
 % Inisialisasi pirate
 % pirate(kode,name,health, kepemilikan)
 % normal = kode 130 - 139
-pirate(130, luffy, 20, 1).
+pirate(130, luffy, 73, 1).
 pirate(131, usop, 70, 0).
 pirate(132, chopper, 60, 0).
 pirate(133, zoro, 63, 0).
