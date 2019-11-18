@@ -340,3 +340,118 @@ quit :-
     
 do_quit(y) :- write('Sampai jumpa!'), halt,!.
 do_quit(n) :- write('Kembali ke lautan Kasatu!!!'),nl,!.
+
+%%%%%%%%%%%%%%%%%%%% SAVE / LOAD %%%%%%%%%%%%%%%%%%%%
+
+save :-
+    is_battle(0),
+    open('file.txt', write, File),
+    playLoc(X,Y),
+    write(File,playLoc(X,Y)), write(File,'.'), nl(File),
+    is_attack(A),
+    write(File,is_attack(A)), write(File,'.'), nl(File),
+    is_battle(B),
+    write(File,is_battle(B)), write(File,'.'), nl(File),
+    is_start(C),
+    write(File,is_start(C)), write(File,'.'), nl(File),
+    is_pick(D,Idx),
+    write(File,is_pick(D,Idx)), write(File,'.'), nl(File),
+    is_specMe(E,Idx1),
+    write(File,is_specMe(E,Idx1)), write(File,'.'), nl(File),
+    is_specEnemy(F,Idx2),
+    write(File,is_specEnemy(F,Idx2)), write(File,'.'), nl(File),
+    is_ok(H),
+    write(File,is_ok(H)), write(File,'.'), nl(File),
+    can_run(G),
+    write(File,can_run(G)), write(File,'.'), nl(File),
+    inventory(N,L),
+    write(File,inventory), 
+        write(File,'('),
+        write(File,N),
+        write(File,','),
+        write(File,'['),
+        printlist(File,L),
+        write(File,']).'),
+    nl(File),
+    invEnemy(N1,L1),
+    write(File,invEnemy), 
+        write(File,'('),
+        write(File,N1),
+        write(File,','),
+        write(File,'['),
+        printlist(File,L1),
+        write(File,']).'),
+    nl(File),
+    forall(
+        pirate(Idx3,Name,HP,Kepemilikan),
+            (write(File,pirate(Idx3,Name,HP,Kepemilikan)),
+            write(File,'.'),
+            nl(File))
+    ),
+    forall(
+        pirLoc(Idx4,X1,Y1),
+            (write(File, pirLoc(Idx4,X1,Y1)),
+            write(File, '.'),
+            nl(File))
+    ),
+    close(File).
+
+printlist(_,[]) :-!.
+printlist(S,[T]) :-
+    write(S,T).
+printlist(S,[H|T]) :-
+    write(S,H),
+    write(S,','),
+    printlist(S,T).
+
+load :-
+    is_battle(0),
+    playLoc(X,Y),
+    is_attack(A),
+    is_battle(B),
+    is_start(C),
+    is_pick(D,Idx),
+    is_specMe(E,Idx1),
+    is_specEnemy(F,Idx2),
+    is_ok(H),
+    can_run(G),
+    inventory(N,L),
+    invEnemy(N1,L1),
+    retractall(playLoc(X,Y)),
+    retractall(is_attack(A)),
+    retractall(is_battle(B)),
+    retractall(is_start(C)),
+    retractall(is_pick(D,Idx)),
+    retractall(is_specMe(E,Idx1)),
+    retractall(is_specEnemy(F,Idx2)),
+    retractall(is_ok(H)),
+    retractall(can_run(G)),
+    retractall(inventory(N,L)),
+    retractall(invEnemy(N1,L1)),
+    remove_pirate,
+    remove_pirLoc,
+    open('file.txt',read,File),
+    load_file(File),
+    close(File).
+
+remove_pirate :-
+    pirate(_,_,_,_),
+    retractall(pirate(_,_,_,_)),
+    !.
+remove_pirate :- !.
+
+remove_pirLoc :-
+    pirLoc(_,_,_),
+    retractall(pirLoc(_,_,_)),
+    !.
+remove_pirLoc :- !.
+
+load_file(File) :-
+    repeat,
+    read(File,S),
+    asserta(S),
+    at_end_of_stream(File).
+
+load :-
+    is_battle(1),
+    help, !.
