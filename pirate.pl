@@ -62,12 +62,6 @@ inventory(1,[130]).
 invEnemy(2,[141,142]).
 % invTotal(List)
 invTotal([131,132,133,134,135,136,137,138,139,140,141,142]).
-printLocc :- invTotal(List), printLoc(List).
-printLoc([]) :- !.
-printLoc([Idx|Tail]) :-
-	pirate(Idx,Name,_,_), pirLoc(Idx,X,Y),
-	write(Name),write('('), write(X),write(','),write(Y),write(')'),nl, 
-	printLoc(Tail).
 
 % Taruh pirate di peta secara random
 is_ok(0).
@@ -95,19 +89,6 @@ put_pirate(Idx):-
     pirLoc(Idx,_,_),
     retract(pirLoc(Idx,_,_)),
     asserta(pirLoc(Idx,X,Y)).
-
-/* normal(X) artinya X merupakan Pirate tipe normal */
-% normal(luffy).
-% normal(usop).
-% normal(chopper).
-% normal(zoro).
-% normal(rayleigh).
-% normal(robin).
-% normal(franky).
-% normal(sanji).
-% normal(nami).
-% normal(doflamingo).
-% normal(jinbei).
 
 /* legend(X) artinya X merupakan Pirate tipe legend */
 legend(bigMama).
@@ -290,19 +271,6 @@ add_inv(X) :-
 	add(X,CurrInv,NewInv),
 	retract(inventory(A, CurrInv)),
 	asserta(inventory(B, NewInv)),!.
-
-% add_inv(X) :-
-% 	pirate(X,NAME,_,0),
-% 	legend(NAME),
-% 	invEnemy(A, CurrInv),
-% 	B is A+1,
-% 	add(X,CurrInv,NewInv),
-% 	health(NAME, H),
-% 	retract(invEnemy(A, CurrInv)),
-% 	asserta(invEnemy(B, NewInv)),
-% 	retract(pirate(X,NAME,_,0)),
-% 	asserta(pirate(X,NAME,H,1)),!.
-
 	
 %sub_inv (indeks pirate yang mati)
 sub_inv(X) :-

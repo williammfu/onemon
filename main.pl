@@ -47,7 +47,9 @@ help :-
     write('     n. s. w. e. = berlayar satu petak'),nl,
     write('     map. = membuka peta'),nl,
     write('     heal. = menyembuhkan semua pirate (hanya di Skypiea)'),nl,
-    write('     status. = menampilkan status anda'),nl,nl,
+    write('     status. = menampilkan status anda'),nl,
+    write('     save. = merekam perjalanan anda (save file)'),nl,
+    write('     load. = melanjutkan perjalanan anda dahulu (load file)')nl,nl,
     write('  Legenda ======================================='),nl,
     write('     P = Player  '),nl,
     write('     X = Ranjau  '),nl,
@@ -382,6 +384,13 @@ save :-
         printlist(File,L1),
         write(File,']).'),
     nl(File),
+    invTotal(L2),
+    write(File,invTotal),
+        write(File,'('),
+        write(File,'['),
+        printlist(File,L2),
+        write(File,']).'),
+    nl(File),
     forall(
         pirate(Idx3,Name,HP,Kepemilikan),
             (write(File,pirate(Idx3,Name,HP,Kepemilikan)),
@@ -417,6 +426,7 @@ load :-
     can_run(G),
     inventory(N,L),
     invEnemy(N1,L1),
+    invTotal(L2),
     retractall(playLoc(X,Y)),
     retractall(is_attack(A)),
     retractall(is_battle(B)),
@@ -428,11 +438,16 @@ load :-
     retractall(can_run(G)),
     retractall(inventory(N,L)),
     retractall(invEnemy(N1,L1)),
+    retractall(invTotal(L2)),
     remove_pirate,
     remove_pirLoc,
     open('file.txt',read,File),
     load_file(File),
     close(File).
+
+load :-
+    is_battle(1),
+    help, !.
 
 remove_pirate :-
     pirate(_,_,_,_),
@@ -451,7 +466,3 @@ load_file(File) :-
     read(File,S),
     asserta(S),
     at_end_of_stream(File).
-
-load :-
-    is_battle(1),
-    help, !.
