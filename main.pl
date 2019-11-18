@@ -49,7 +49,7 @@ help :-
     write('     heal. = menyembuhkan semua pirate (hanya di Skypiea)'),nl,
     write('     status. = menampilkan status anda'),nl,
     write('     save. = merekam perjalanan anda (save file)'),nl,
-    write('     load. = melanjutkan perjalanan anda dahulu (load file)')nl,nl,
+    write('     load. = melanjutkan perjalanan anda dahulu (load file)'),nl,nl,
     write('  Legenda ======================================='),nl,
     write('     P = Player  '),nl,
     write('     X = Ranjau  '),nl,

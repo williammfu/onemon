@@ -27,6 +27,9 @@ Permainan ini diimplementasikan dalam bahasa pemrograman Prolog.
 Untuk bisa menjalankan game ini, pengguna diharapkan telah memasang compiler Prolog
 seperti GNU Prolog.
 
+Untuk menjalankan permainan, pengguna dapat menjalankan file main.pl pada compiler prolog
+dengan perintah consult('main.pl').
+
 ## Keadaan Awal
 Saat permainan dijalankan, pemain akan diberikan seorang kru bernama luffy
 dan berada pada posisi (1,1) pada peta. 
@@ -59,12 +62,17 @@ Tipe ini berguna dalam mekanisme (ATTACK) dalam permainan dengan aturan sebagai 
 Selain normal Pirate, terdapat pula dua Legendary Pirate pada lautan Kasatu, dengan value atribut
 yang lebih besar secara signifikan daripada normal Pirate.
 
-Pada setiap giliran permainan, pemain dapat berpindah satu petak. Pemain dapat menghadapi
-seorang Pirate (normal atau Legendary) setiap berpindah petak. Pemain dapat memilih untuk (FIGHT) atau
-untuk (RUN) dari Pirate tersebut. Ada kemungkinan (RUN) tidak berhasil, sehingga pemain harus menghadapi pirate tersebut.
+Setiap pirate memiliki dua jenis serangan, yaitu attack dan specialAttack. specialAttack memiliki damage yang lebih besar 50% dari attack biasa, namun hanya dapat digunakan sekali saja setiap battle.
 
-Apablia pemain berhasil mengalahkan Pirate tersebut, pemain dapat memilih untuk me'rekrut' Pirate tersebut dengan command (Capture)
+Pada setiap giliran permainan, pemain dapat berpindah satu petak. Pemain dapat menghadapi
+seorang Pirate (normal atau Legendary) setiap berpindah petak. Pemain dapat memilih untuk (fight) atau
+untuk (run) dari Pirate tersebut. Ada kemungkinan (run) tidak berhasil, sehingga pemain harus menghadapi pirate tersebut.
+
+Apablia pemain berhasil mengalahkan Pirate tersebut, pemain dapat memilih untuk me'rekrut' Pirate tersebut dengan command (capture)
 ke dalam kapalnya. Apabila kapal pemain sudah penuh, pemain harus mengusir salah satu Pirate dari kapalnya dengan command drop(Nama Pirate).
+
+Apabila pemain berada di Skypiea, pemain dapat menyembuhkan seluruh kru kapalnya dengan perintah (heal).
+heal hanya bisa dilakukan sekali saja dalam permainan. 
 
 Permainan akan selesai apabila :
 >> pemain berhasil mengalahkan semua Legendary Pirate yang ada pada peta,
@@ -80,3 +88,6 @@ heal. = menyembuhkan semua pirate (hanya di Skypiea)
 status. = menampilkan status anda
 save. = merekam perjalanan anda (save file)
 load. = melanjutkan perjalanan anda dahulu (load file)
+
+
+### Terima Kasih ###
