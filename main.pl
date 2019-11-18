@@ -30,7 +30,9 @@ help :-
     write('     run.           = kabur seperti pengecut'),nl,
     write('     pick(PirateName) = memilih kru kapal '),nl,
     write('     attack.        = menyerang musuh (biasa)'),nl,
-    write('     specialAttack. = menggunakan special skill'),nl,!.
+    write('     specialAttack. = menggunakan special skill'),nl,
+    write('     capture. = menangkap pirate'),nl,
+    write('     drop(PirateName). = mengusir satu pirate dari kapal'),nl,!.
 
 help :-
     is_start(1), nl,
@@ -176,7 +178,9 @@ check_fight :-
 
 menang_battle :-
     playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Name,_,_), legend(Name),
-    sub_inv(Idx), invEnemy(0,_), write('Anda adalah Kapten terbaik di Lautan Kasatu!'), nl,
+    sub_inv(Idx), invEnemy(0,_), 
+    write('*  Akhirnya!  *'),nl, write(' Anda berhasil menemukan ONEMON! !'),nl,
+    write('Anda adalah Kapten terbaik di Lautan Kasatu!'), nl,
     write('Ayo cari dan berpetualang di lautan lain, Kapten!'), nl,
     do_quit(y),!.
     
@@ -204,6 +208,7 @@ capture :-
     write('Selamat bergabung dalam kru, '), write(Name), write('!'),!.
 
 drop(Name) :-
+    inventory(6,_),
     pirate(Idx,Name,Hp,1), Hp =< 0, health(Name, InitHp), retract(pirate(Idx,Name,Hp,1)),
     asserta(pirate(Idx,Name,InitHp,1)), sub_inv(Idx),
     write(Name),write(' telah melompat dari papan :('), nl, capture,!.
@@ -299,7 +304,7 @@ pick(_) :- % Milih gabener
 
 % Leave Pirate
 leave_pirate :-
-    playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Name,Hp,_), health(Name,InitHp),
+    playLoc(X,Y), pirLoc(Idx,X,Y), pirate(Idx,Name,Hp,_), Hp=< 0,health(Name,InitHp),
     retract(pirate(Idx,Name,Hp,_)), asserta(pirate(Idx,Name,InitHp,_)),
     random_putt,!.
 leave_pirate :-
