@@ -5,7 +5,7 @@
 | |__| | |\  | |____  | |  | | |__| | |\  |
  \____/|_| \_|______| |_|  |_|\____/|_| \_|
 
-### Kelompok 11
+### Kelompok 11 - Kelas 01
 13518013    Raras Pradnya Pramudita
 13518055    William Fu
 13518097    Rakha Fadhilah
@@ -28,7 +28,7 @@ Untuk bisa menjalankan game ini, pengguna diharapkan telah memasang compiler Pro
 seperti GNU Prolog.
 
 ## Keadaan Awal
-Saat permainan dijalankan, pemain akan diberikan seorang Pirate (secara random) 
+Saat permainan dijalankan, pemain akan diberikan seorang kru bernama luffy
 dan berada pada posisi (1,1) pada peta. 
 
 Seorang Pirate memiliki sejumlah atribut:
@@ -37,10 +37,10 @@ Seorang Pirate memiliki sejumlah atribut:
     3. Normal Attack (Damage)
     4. Special Attack (Skill)
 
-Terdapat 3 tipe Pirate yang ada dalam permainan ini, yaitu:
-    1. Fighter
-    2. Swordsman
-    3. Shooter
+Terdapat 6 tipe Pirate yang ada dalam permainan ini, yaitu:
+    1. Fighter        4. Cyborg
+    2. Swordsman      5. Soldier
+    3. Shooter        6. Bandit
 
 Tipe ini berguna dalam mekanisme (ATTACK) dalam permainan dengan aturan sebagai berikut:
     1. Damage Pirate tipe Shooter akan lebih besar 50% dari damage biasanya jika melawan Pirate tipe Fighter. 
@@ -49,18 +49,34 @@ Tipe ini berguna dalam mekanisme (ATTACK) dalam permainan dengan aturan sebagai 
        Sedangkan damage dari Pirate tipe Swordsman akan lebih kecil 50% dari damage biasanya
     3. Damage Pirate tipe Swordsman akan lebih besar 50% dari damage biasanya jika melawan Pirate tipe Shooter. 
        Sedangkan damage dari Pirate tipe Shooter akan lebih kecil 50% dari damage biasanya
+    4. Damage Pirate tipe Bandit akan lebih besar 50% dari damage biasanya jika melawan Pirate tipe Cyborg. 
+       Sedangkan damage dari Pirate tipe Cyborg akan lebih kecil 50% dari damage biasanya
+    5. Damage Pirate tipe Soldier akan lebih besar 50% dari damage biasanya jika melawan Pirate tipe Bandit. 
+       Sedangkan damage dari Pirate tipe Bandit akan lebih kecil 50% dari damage biasanya
+    6. Damage Pirate tipe Cyborg akan lebih besar 50% dari damage biasanya jika melawan Pirate tipe Soldier. 
+       Sedangkan damage dari Pirate tipe Soldier akan lebih kecil 50% dari damage biasanya
 
 Selain normal Pirate, terdapat pula dua Legendary Pirate pada lautan Kasatu, dengan value atribut
 yang lebih besar secara signifikan daripada normal Pirate.
 
 Pada setiap giliran permainan, pemain dapat berpindah satu petak. Pemain dapat menghadapi
 seorang Pirate (normal atau Legendary) setiap berpindah petak. Pemain dapat memilih untuk (FIGHT) atau
-untuk (FLEE) dari Pirate tersebut. Pemain memiliki 50% kemungkinan (FLEE) berhasil.
+untuk (RUN) dari Pirate tersebut. Ada kemungkinan (RUN) tidak berhasil, sehingga pemain harus menghadapi pirate tersebut.
 
-Apablia pemain berhasil mengalahkan Pirate tersebut, pemain dapat memilih untuk me'rekrut' Pirate tersebut
-ke dalam kapalnya. Apabila kapal pemain sudah penuh, pemain harus mengusir salah satu Pirate dari kapalnya.
+Apablia pemain berhasil mengalahkan Pirate tersebut, pemain dapat memilih untuk me'rekrut' Pirate tersebut dengan command (Capture)
+ke dalam kapalnya. Apabila kapal pemain sudah penuh, pemain harus mengusir salah satu Pirate dari kapalnya dengan command drop(Nama Pirate).
 
 Permainan akan selesai apabila :
 >> pemain berhasil mengalahkan semua Legendary Pirate yang ada pada peta,
 >> pemain telah kehabisan Pirate,
 
+### Daftar Command
+start. = menjalankan permainan
+help. = membuka jurnal
+quit. = keluar dari permainan
+n. s. w. e. = berlayar satu petak
+map. = membuka peta
+heal. = menyembuhkan semua pirate (hanya di Skypiea)
+status. = menampilkan status anda
+save. = merekam perjalanan anda (save file)
+load. = melanjutkan perjalanan anda dahulu (load file)
